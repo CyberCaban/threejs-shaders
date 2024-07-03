@@ -1,12 +1,10 @@
-import { BackSide } from "three";
+import { useThree } from "@react-three/fiber";
+import { Color } from "three";
 
-function SkyDome() {
-  return (
-    <mesh>
-      <sphereGeometry args={[500, 500, 500]} />
-      <meshBasicMaterial color="black" side={BackSide} />
-    </mesh>
-  );
+function SkyBox() {
+  const { scene } = useThree();
+  scene.background = new Color("black");
+  return null;
 }
 
-export default SkyDome;
+export default SkyBox;

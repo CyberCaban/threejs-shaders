@@ -1,30 +1,41 @@
-import { useEffect, useRef } from "react";
-import { Color, Euler, InstancedMesh, Object3D } from "three";
+import { useEffect, useMemo, useRef } from "react";
+import { Color, DoubleSide, InstancedMesh, Object3D, PlaneGeometry } from "three";
 import { getRandomInt } from "../utils";
-import { useFrame } from "@react-three/fiber";
 
 function Instances({ count = 100, temp = new Object3D() }) {
   const instance = useRef<InstancedMesh>(null);
+  const minDistance = 1000;
 
-  useFrame((_, delta) => {
-    // if (instance.current !== null) {
-    //   instance.current.rotation.x += delta;
-    // }
-  });
+  const p: {
+    posX: number;
+    posY: number;
+    posZ: number;
+    rotX: number;
+    rotY: number;
+    rotZ: number;
+  }[] = [];
+  const particles = useMemo(() => {
+    for (let i = 0; i < count; i++) {
+      p.push({
+        posX: Math.random() * minDistance * 2 - minDistance,
+        posY: Math.random() * minDistance * 2 - minDistance,
+        posZ: Math.random() * minDistance * 2 - minDistance,
+        rotX: Math.random() * 2 * Math.PI,
+        rotY: Math.random() * 2 * Math.PI,
+        rotZ: Math.random() * 2 * Math.PI,
+      });
+    }
+    return p;
+  }, [count]);
 
   useEffect(() => {
     if (!instance.current) return;
-    for (let i = 0; i < count; i++) {
-      temp.position.set(
-        Math.random() * 1000 - 500,
-        Math.random() * 1000 - 500,
-        Math.random() * 1000 - 500
-      );
-      temp.rotation.set(
-        Math.random() * 2 * Math.PI,
-        Math.random() * 2 * Math.PI,
-        Math.random() * 2 * Math.PI
-      )
+    particles.forEach((p, i) => {
+      if (!instance.current) return;
+      temp.position.set(p.posX, p.posY, p.posZ);
+      temp.rotation.x = p.rotX;
+      temp.rotation.y = p.rotY;
+      temp.rotation.z = p.rotZ;
       temp.updateMatrix();
       instance.current.setMatrixAt(i, temp.matrix);
       const gray = getRandomInt(0, 255) / 255;
@@ -32,14 +43,14 @@ function Instances({ count = 100, temp = new Object3D() }) {
         i,
         new Color(gray, gray, gray).convertSRGBToLinear()
       );
-    }
+    });
     instance.current.instanceMatrix.needsUpdate = true;
   }, []);
 
   return (
     <instancedMesh ref={instance} args={[null, null, count]}>
-      <boxGeometry />
-      <meshBasicMaterial />
+      <planeGeometry />
+      <meshBasicMaterial side={DoubleSide} />
     </instancedMesh>
   );
 }
