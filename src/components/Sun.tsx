@@ -37,7 +37,7 @@ const SunShader = {
 };
 
 export default function Sun(props) {
-  const { nodes, materials } = useGLTF("/Sun.glb");
+  const { nodes, materials } = useGLTF("./Sun.glb");
   const lookAt = useCameraLookAt();
   const ref = useRef<Mesh>(null);
 
@@ -69,4 +69,4 @@ export default function Sun(props) {
   );
 }
 
-useGLTF.preload("/Sun.glb");
+useGLTF.preload("./Sun.glb");

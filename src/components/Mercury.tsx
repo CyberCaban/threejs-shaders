@@ -7,7 +7,7 @@ import AstralBody from "./AstralBody";
 export default function Mercury(props) {
   return (
     <AstralBody
-      modelPath="/Mercury.glb"
+      modelPath="./Mercury.glb"
       position={new Vector3(0, 0, 0)}
       scale={0.1}
       cameraPos={[100, 100, 100]}
