@@ -1,10 +1,16 @@
-import { useGLTF } from "@react-three/drei";
-import { useCameraLookAt } from "../utils";
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
-import { Group, Mesh, ShaderMaterial } from "three";
+import {
+  Mesh,
+  PointLight,
+  PointLightHelper,
+  ShaderMaterial,
+  Vector3,
+} from "three";
+import { shader } from "../types";
+import AstralBody from "./AstralBody";
 
-const SunShader = {
+const SunShader: shader = {
   uniforms: {
     u_time: { value: 0.0 },
   },
@@ -37,36 +43,36 @@ const SunShader = {
 };
 
 export default function Sun(props) {
-  const { nodes, materials } = useGLTF("./Sun.glb");
-  const lookAt = useCameraLookAt();
-  const ref = useRef<Mesh>(null);
+  // const { nodes, materials } = useGLTF("./Sun.glb");
+  // const lookAt = useCameraLookAt();
+  const meshRef = useRef<Mesh>(null);
+  // const lightRef = useRef<PointLight>(null);
 
   useFrame((state, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.y += delta / 10;
+    if (!meshRef.current) return;
+    meshRef.current.rotation.y += delta / 10;
 
-    // ref.current.material.uniforms.u_time.value =
-    //   state.clock.getElapsedTime();
+    //   // ref.current.material.uniforms.u_time.value =
+    //   //   state.clock.getElapsedTime();
   });
 
+  // useHelper( lightRef, PointLightHelper, 51, "red" );
+
   return (
-    <group {...props} dispose={null} onClick={(e) => lookAt(e, 150, 150, 150)}>
-      <mesh
-        geometry={nodes.Cube001.geometry}
-        material={materials["None"]}
-        scale={100}
-        ref={ref}
-      >
-        
-        {/* <shaderMaterial
-          uniforms={SunShader.uniforms}
-          vertexShader={SunShader.vertexShader}
-          // fragmentShader={SunShader.fragmentShader}
-          wireframe={true}
-        /> */}
-      </mesh>
-    </group>
+    <AstralBody
+      ref={meshRef}
+      modelPath="./Sun.glb"
+      position={new Vector3(0, 0, 0)}
+      scale={10}
+      cameraPos={[150, 150, 150]}
+      {...props}
+    />
+
+    //     {/* <shaderMaterial
+    //       uniforms={SunShader.uniforms}
+    //       vertexShader={SunShader.vertexShader}
+    //       // fragmentShader={SunShader.fragmentShader}
+    //       wireframe={true}
+    //     /> */}
   );
 }
-
-useGLTF.preload("./Sun.glb");
